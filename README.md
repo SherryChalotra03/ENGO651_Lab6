@@ -13,7 +13,7 @@ This Lab is a web-based application that demonstrates line simplification using 
 
 ## Technologies Used
 - **HTML5:** For the structure of the web page.
-- **CSS3:** For styling the UI, including the heading, buttons, and summary message.
+- **CSS3:** For styling the UI.
 - **JavaScript:** For the core functionality and interactivity.
 - **Leaflet.js (v1.9.4):** For rendering the interactive map and drawing polylines.
 - **Turf.js (v6):** For performing line simplification.
