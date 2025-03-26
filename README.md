@@ -32,6 +32,6 @@ This Lab is a web-based application that demonstrates line simplification using 
 - A summary message will appear at the bottom, showing the number of points before and after simplification (e.g., "Simplification Summary: Points before simplification: 21, Points after simplification: 10").
 - Click the "Reset Polyline" button to clear the map, remove all polylines and markers, and start over. The summary message will also be cleared.
 
-## Expecte Output
+## Expected Output
 
 ![image](https://github.com/user-attachments/assets/6de1bd9b-2a64-4da1-9a25-527d29fd6789)
