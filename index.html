@@ -4,23 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Line Simplification with Turf.js</title>
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="map"></div>
-    <div class="buttons">
-        <button id="simplifyBtn">Simplify Polyline</button>
-        <button id="resetBtn">Reset Polyline</button>
+    <div class="container">
+        <h1>Line Simplification Demo</h1>
+        <p class="instructions">Click on the map to draw a polyline. Add at least 5 points to enable simplification. The original line will be blue, and the simplified line will be red.</p>
+        <div id="map"></div>
+        <div class="controls">
+            <button id="simplifyBtn" disabled>Simplify Polyline</button>
+            <button id="resetBtn">Reset Polyline</button>
+        </div>
+        <div id="message"></div>
+        <div class="legend">
+            <p><span class="color-box original"></span> Original Polyline (Blue)</p>
+            <p><span class="color-box simplified"></span> Simplified Polyline (Red)</p>
+        </div>
     </div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Turf.js -->
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-    <!-- Custom JS -->
     <script src="script.js"></script>
 </body>
 </html>

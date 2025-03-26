@@ -1,23 +1,101 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.instructions {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+}
+
 #map {
     height: 600px;
     width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-.buttons {
+.controls {
+    text-align: center;
     margin-top: 10px;
 }
 
 button {
-    padding: 8px 16px;
-    margin-right: 10px;
-    font-size: 14px;
+    padding: 10px 20px;
+    margin: 0 5px;
+    font-size: 16px;
     cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
     border: none;
     border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
-button:hover {
+#simplifyBtn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#simplifyBtn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#simplifyBtn:enabled:hover {
     background-color: #45a049;
+}
+
+#resetBtn {
+    background-color: #f44336;
+    color: white;
+}
+
+#resetBtn:hover {
+    background-color: #da190b;
+}
+
+#message {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+}
+
+.legend {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.legend p {
+    margin: 5px 0;
+}
+
+.color-box {
+    display: inline-block;
+    width: 20px;
+    height: 10px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.color-box.original {
+    background-color: blue;
+}
+
+.color-box.simplified {
+    background-color: red;
 }
