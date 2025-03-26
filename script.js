@@ -1,99 +1,143 @@
-// Initialize the map
-const map = L.map('map').setView([51.505, -0.09], 13);
+// Ensure the script runs after the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize the map
+    const map = L.map('map').setView([51.505, -0.09], 13);
 
-// Add OpenStreetMap tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
-}).addTo(map);
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-// Variables to store coordinates and polylines
-let coordinates = [];
-let originalPolyline = null;
-let simplifiedPolyline = null;
+    // Variables to store coordinates, polylines, and markers
+    let coordinates = [];
+    let originalPolyline = null;
+    let simplifiedPolyline = null;
+    let markers = []; // Array to store markers
 
-// Minimum points required for simplification
-const MIN_POINTS = 5;
+    // Minimum points required for simplification
+    const MIN_POINTS = 5;
 
-// Reference to the message element
-const messageDiv = document.getElementById('message');
+    // References to DOM elements
+    const messageDiv = document.getElementById('message');
+    const simplifyBtn = document.getElementById('simplifyBtn');
+    const summaryMessageDiv = document.getElementById('summaryMessage'); // New reference for summary message
 
-// Function to update the instructional message
-function updateMessage() {
-    if (!messageDiv) {
-        console.error('Message div not found in the DOM');
-        return;
-    }
-    if (coordinates.length < MIN_POINTS) {
-        messageDiv.textContent = `Click on the map to add points. You need at least ${MIN_POINTS} points to simplify (current: ${coordinates.length}).`;
-    } else {
-        messageDiv.textContent = 'You have enough points! Click "Simplify Polyline" to see the result.';
-    }
-}
-
-// Function to draw the original polyline
-function drawPolyline() {
-    if (originalPolyline) {
-        map.removeLayer(originalPolyline);
-    }
-    originalPolyline = L.polyline(coordinates, { color: 'blue' }).addTo(map);
-}
-
-// Handle map clicks to draw polyline
-map.on('click', function (e) {
-    coordinates.push([e.latlng.lat, e.latlng.lng]);
-    drawPolyline();
-    updateMessage();
-});
-
-// Simplify button logic
-document.getElementById('simplifyBtn').addEventListener('click', function () {
-    try {
-        if (coordinates.length < MIN_POINTS) {
-            alert(`Please draw a polyline with at least ${MIN_POINTS} points. You currently have ${coordinates.length}.`);
+    // Function to update the instructional message and button state
+    function updateMessage() {
+        if (!messageDiv) {
+            console.error('Message div not found in the DOM');
             return;
         }
+        if (coordinates.length < MIN_POINTS) {
+            messageDiv.textContent = `Click on the map to add points. You need at least ${MIN_POINTS} points to simplify, but you can add more for better results (current: ${coordinates.length}).`;
+            simplifyBtn.disabled = true;
+        } else {
+            messageDiv.textContent = `You have enough points! Click "Simplify Polyline" to see the result (current: ${coordinates.length}).`;
+            simplifyBtn.disabled = false;
+        }
+    }
 
-        console.log('Original coordinates:', coordinates);
+    // Function to update the summary message
+    function updateSummaryMessage(before, after) {
+        if (!summaryMessageDiv) {
+            console.error('Summary message div not found in the DOM');
+            return;
+        }
+        summaryMessageDiv.textContent = `Simplification Summary: Points before simplification: ${before}, Points after simplification: ${after}`;
+    }
 
-        // Convert coordinates to GeoJSON LineString (Turf expects [lng, lat])
-        const turfCoords = coordinates.map(coord => [coord[1], coord[0]]);
-        const line = turf.lineString(turfCoords);
+    // Function to clear the summary message
+    function clearSummaryMessage() {
+        if (summaryMessageDiv) {
+            summaryMessageDiv.textContent = '';
+        }
+    }
 
-        // Simplify the line with a higher tolerance for more noticeable effect
-        const simplified = turf.simplify(line, { tolerance: 0.05, highQuality: false });
-        console.log('Simplified GeoJSON:', simplified);
+    // Function to draw the original polyline
+    function drawPolyline() {
+        if (originalPolyline) {
+            map.removeLayer(originalPolyline);
+        }
+        originalPolyline = L.polyline(coordinates, { color: 'blue', weight: 4 }).addTo(map);
+    }
 
-        // Extract simplified coordinates and convert back to [lat, lng] for Leaflet
-        const simplifiedCoords = simplified.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+    // Handle map clicks to draw polyline and add markers
+    map.on('click', function (e) {
+        coordinates.push([e.latlng.lat, e.latlng.lng]);
+        
+        // Add a marker at the clicked point
+        const marker = L.circleMarker([e.latlng.lat, e.latlng.lng], {
+            radius: 5,
+            color: '#333',
+            fillColor: '#333',
+            fillOpacity: 1
+        }).addTo(map);
+        markers.push(marker);
 
-        // Remove previous simplified polyline if it exists
+        drawPolyline();
+        updateMessage();
+    });
+
+    // Simplify button logic
+    simplifyBtn.addEventListener('click', function () {
+        try {
+            if (coordinates.length < MIN_POINTS) {
+                alert(`Please draw a polyline with at least ${MIN_POINTS} points. You currently have ${coordinates.length}.`);
+                return;
+            }
+
+            console.log('Original coordinates:', coordinates);
+            console.log('Number of points before simplification:', coordinates.length);
+
+            // Convert coordinates to GeoJSON LineString (Turf expects [lng, lat])
+            const turfCoords = coordinates.map(coord => [coord[1], coord[0]]);
+            const line = turf.lineString(turfCoords);
+
+            // Simplify the line with a lower tolerance to retain more points
+            const simplified = turf.simplify(line, { tolerance: 0.005, highQuality: false });
+            console.log('Simplified GeoJSON:', simplified);
+
+            // Extract simplified coordinates and convert back to [lat, lng] for Leaflet
+            const simplifiedCoords = simplified.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+            console.log('Number of points after simplification:', simplifiedCoords.length);
+            console.log('Simplified polyline drawn with coordinates:', simplifiedCoords);
+
+            // Update the summary message
+            updateSummaryMessage(coordinates.length, simplifiedCoords.length);
+
+            // Remove previous simplified polyline if it exists
+            if (simplifiedPolyline) {
+                map.removeLayer(simplifiedPolyline);
+            }
+
+            // Draw the simplified polyline
+            simplifiedPolyline = L.polyline(simplifiedCoords, { color: 'red', weight: 4 }).addTo(map);
+        } catch (error) {
+            console.error('Error in simplification:', error);
+            alert('An error occurred while simplifying the polyline. Check the console for details.');
+        }
+    });
+
+    // Reset button logic
+    document.getElementById('resetBtn').addEventListener('click', function () {
+        if (originalPolyline) {
+            map.removeLayer(originalPolyline);
+        }
         if (simplifiedPolyline) {
             map.removeLayer(simplifiedPolyline);
         }
+        // Remove all markers
+        markers.forEach(marker => map.removeLayer(marker));
+        markers = [];
+        coordinates = [];
+        originalPolyline = null;
+        simplifiedPolyline = null;
+        updateMessage();
+        clearSummaryMessage(); // Clear the summary message on reset
+    });
 
-        // Draw the simplified polyline
-        simplifiedPolyline = L.polyline(simplifiedCoords, { color: 'red' }).addTo(map);
-        console.log('Simplified polyline drawn with coordinates:', simplifiedCoords);
-    } catch (error) {
-        console.error('Error in simplification:', error);
-        alert('An error occurred while simplifying the polyline. Check the console for details.');
-    }
-});
-
-// Reset button logic
-document.getElementById('resetBtn').addEventListener('click', function () {
-    if (originalPolyline) {
-        map.removeLayer(originalPolyline);
-    }
-    if (simplifiedPolyline) {
-        map.removeLayer(simplifiedPolyline);
-    }
-    coordinates = [];
-    originalPolyline = null;
-    simplifiedPolyline = null;
+    // Initialize the message on page load
     updateMessage();
+    clearSummaryMessage(); // Ensure the summary message is empty on page load
 });
-
-// Initialize the message on page load
-updateMessage();
