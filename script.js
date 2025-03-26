@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // References to DOM elements
     const messageDiv = document.getElementById('message');
     const simplifyBtn = document.getElementById('simplifyBtn');
-    const summaryMessageDiv = document.getElementById('summaryMessage'); // New reference for summary message
+    const summaryDiv = document.getElementById('summary');
 
     // Function to update the instructional message and button state
     function updateMessage() {
@@ -38,19 +38,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Function to update the summary message
-    function updateSummaryMessage(before, after) {
-        if (!summaryMessageDiv) {
-            console.error('Summary message div not found in the DOM');
+    // Function to display the simplification summary
+    function displaySummary(before, after) {
+        if (!summaryDiv) {
+            console.error('Summary div not found in the DOM');
             return;
         }
-        summaryMessageDiv.textContent = `Simplification Summary: Points before simplification: ${before}, Points after simplification: ${after}`;
+        summaryDiv.textContent = `Simplification Summary: Points before simplification: ${before}, Points after simplification: ${after}`;
     }
 
-    // Function to clear the summary message
-    function clearSummaryMessage() {
-        if (summaryMessageDiv) {
-            summaryMessageDiv.textContent = '';
+    // Function to clear the summary
+    function clearSummary() {
+        if (summaryDiv) {
+            summaryDiv.textContent = '';
         }
     }
 
@@ -103,9 +103,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Number of points after simplification:', simplifiedCoords.length);
             console.log('Simplified polyline drawn with coordinates:', simplifiedCoords);
 
-            // Update the summary message
-            updateSummaryMessage(coordinates.length, simplifiedCoords.length);
-
             // Remove previous simplified polyline if it exists
             if (simplifiedPolyline) {
                 map.removeLayer(simplifiedPolyline);
@@ -113,6 +110,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Draw the simplified polyline
             simplifiedPolyline = L.polyline(simplifiedCoords, { color: 'red', weight: 4 }).addTo(map);
+
+            // Display the simplification summary
+            displaySummary(coordinates.length, simplifiedCoords.length);
         } catch (error) {
             console.error('Error in simplification:', error);
             alert('An error occurred while simplifying the polyline. Check the console for details.');
@@ -134,10 +134,12 @@ document.addEventListener('DOMContentLoaded', function () {
         originalPolyline = null;
         simplifiedPolyline = null;
         updateMessage();
-        clearSummaryMessage(); // Clear the summary message on reset
+        clearSummary(); // Clear the summary on reset
     });
+
+    // Clear the summary on page refresh
+    window.addEventListener('beforeunload', clearSummary);
 
     // Initialize the message on page load
     updateMessage();
-    clearSummaryMessage(); // Ensure the summary message is empty on page load
 });
