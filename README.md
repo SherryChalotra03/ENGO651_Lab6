@@ -1,7 +1,7 @@
 # ENGO651_Lab6
 
 ## Overview
-This project is a web-based application that demonstrates line simplification using Leaflet.js and Turf.js. Users can draw a polyline on an interactive map by clicking on the map, and after adding at least 5 points, they can simplify the polyline using a "Simplify Polyline" button. The original polyline is displayed in blue, and the simplified polyline is shown in red. A summary of the number of points before and after simplification is displayed at the bottom of the page.
+This Lab is a web-based application that demonstrates line simplification using Leaflet.js and Turf.js. Users can draw a polyline on an interactive map by clicking on the map, and after adding at least 5 points, they can simplify the polyline using a "Simplify Polyline" button. The original polyline is displayed in blue, and the simplified polyline is shown in red. A summary of the number of points before and after simplification is displayed at the bottom of the page.
 
 ## Features
 - Interactive map powered by Leaflet.js with OpenStreetMap tiles.
@@ -20,10 +20,10 @@ This project is a web-based application that demonstrates line simplification us
 - **Google Fonts (Poppins):** For the heading font.
 
 ## Project Structure
-├── index.html
-├── styles.css
-├── script.js
-└── README.md
+├── index.html <br>
+├── styles.css <br>
+├── script.js <br>
+└── README.md <br>
 
 ## Usage
 - Click on the map to add points and draw a polyline. Each click adds a point, marked by a small dark circle, and connects the points with a blue line (original polyline).
